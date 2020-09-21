@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ejfhp/trail/trace"
+	"github.com/trealtamira/monorepo/juist/trail/trace"
 )
 
 func TestTrace(t *testing.T) {
