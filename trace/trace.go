@@ -98,7 +98,9 @@ func (r Trace) Append(trail Trace) Trace {
 
 //UTC add the time to the current Trace record
 func (r Trace) UTC() Trace {
+	r.open()
 	r.appendKeyVal(timef, time.Now().Format(time.RFC3339))
+	r.close()
 	return r
 }
 
