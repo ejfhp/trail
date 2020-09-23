@@ -1,3 +1,3 @@
-module github.com/trealtamira/monorepo/juist/trail
+module github.com/ejfhp/trail
 
 go 1.15

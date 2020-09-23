@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/trealtamira/monorepo/juist/trail"
-	"github.com/trealtamira/monorepo/juist/trail/trace"
+	"github.com/ejfhp/trail"
+	"github.com/ejfhp/trail/trace"
 )
 
 func TestLog(t *testing.T) {
