@@ -3,6 +3,8 @@ package trail
 import (
 	"io"
 	"sync"
+
+	"github.com/ejfhp/trail/trace"
 )
 
 const (
@@ -26,8 +28,8 @@ type logger struct {
 	writer io.Writer
 }
 
-func Println(tr []byte) {
-	if li != nil {
+func Println(tr trace.Trace) {
+	if li != nil && tr != nil {
 		writeN(li.writer, tr)
 	}
 }

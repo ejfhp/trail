@@ -1,6 +1,7 @@
 package trail_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -15,13 +16,28 @@ func TestLog(t *testing.T) {
 	msga := trace.New().Add("extra", "append")
 	trail.SetWriter(&output)
 
-	trail.Println(msg.Append(msga).Finalize())
+	trail.Println(msg.Append(msga))
 
 	exp := `{"severity":"INFO","message":"failed to log","extra":"append"}` + "\n"
 	log := output.String()
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}
+}
+
+func TestSourceLog(t *testing.T) {
+	output := strings.Builder{}
+	msg := trace.Info("failed to log").Source("log_test.go", "TestSourceLog", "99")
+	trail.SetWriter(&output)
+
+	trail.Println(msg)
+
+	exp := `{"severity":"INFO","message":"failed to log","sourceLocation":{"file":"log_test.go","function":"TestSourceLog","line":"99"}}` + "\n"
+	log := output.String()
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+	fmt.Println(string(msg))
 }
 
 func BenchmarkLog(b *testing.B) {

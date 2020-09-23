@@ -12,7 +12,7 @@ func TestTrace(t *testing.T) {
 	msg := trace.Info("failed to log")
 
 	exp := `{"severity":"INFO","message":"failed to log"}`
-	log := string(msg.Finalize())
+	log := string(msg)
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}
@@ -21,7 +21,7 @@ func TestTrace(t *testing.T) {
 func TestAppendTrace(t *testing.T) {
 	msg := trace.Info("failed to log")
 	msga := trace.New().Add("extra", "append")
-	log := string(msg.Append(msga).Finalize())
+	log := string(msg.Append(msga))
 
 	exp := `{"severity":"INFO","message":"failed to log","extra":"append"}`
 	if log != exp {
@@ -35,17 +35,17 @@ func TestErrorTrace(t *testing.T) {
 	msg := trace.Alert("error").Error(errL)
 
 	exp := `{"severity":"ALERT","message":"error","error":"errore di prova: open non_esiste.txt: no such file or directory"}`
-	log := string(msg.Finalize())
+	log := string(msg)
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}
 }
 
 func TestSourceTrace(t *testing.T) {
-	msg := trace.Info("failed to log").Source("log_test.go", "TestSourcetrailord", "69")
+	msg := trace.Info("failed to log").Source("log_test.go", "TestSourceTrace", "99")
 
-	exp := `{"severity":"INFO","message":"failed to log","sourceLocation":{"file":"log_test.go","function":"TestSourcetrailord","line":"69"}}`
-	log := string(msg.Finalize())
+	exp := `{"severity":"INFO","message":"failed to log","sourceLocation":{"file":"log_test.go","function":"TestSourceTrace","line":"99"}}`
+	log := string(msg)
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}
@@ -54,10 +54,10 @@ func TestSourceTrace(t *testing.T) {
 
 func TestSourceErrorTrace(t *testing.T) {
 	err := fmt.Errorf("FAKE ERROR")
-	msg := trace.Info("failed to log").Source("log_test.go", "TestSourcetrailord", "69").Error(err)
+	msg := trace.Info("failed to log").Source("log_test.go", "TestSourceTrace", "99").Error(err)
 
-	exp := `{"severity":"INFO","message":"failed to log","sourceLocation":{"file":"log_test.go","function":"TestSourcetrailord","line":"69"},"error":"FAKE ERROR"}`
-	log := string(msg.Finalize())
+	exp := `{"severity":"INFO","message":"failed to log","sourceLocation":{"file":"log_test.go","function":"TestSourceTrace","line":"99"},"error":"FAKE ERROR"}`
+	log := string(msg)
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}

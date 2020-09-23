@@ -24,13 +24,15 @@ type Trace []byte
 
 //New returns a new Trace record
 func New() Trace {
-	return append(make([]byte, 0, 500), '{')
+	return append(make([]byte, 0, 500), '{', '}')
 }
 
 func withSeverity(s, msg string) Trace {
 	r := New()
-	r.appendBytes(severity, s)
-	r.appendBytes(message, msg)
+	r.open()
+	r.appendKeyVal(severity, s)
+	r.appendKeyVal(message, msg)
+	r.close()
 	return r
 }
 
@@ -56,45 +58,51 @@ func Alert(msg string) Trace {
 
 //Add append a generic key-value to the current Trace
 func (r Trace) Add(name, val string) Trace {
-	r.appendBytes(name, val)
+	r.open()
+	r.appendKeyVal(name, val)
+	r.close()
 	return r
 }
 
 //Source append a source location to the current Trace
 func (r Trace) Source(file, function, lineNum string) Trace {
-	r.appendBytesNew(source)
-	r.appendBytes(sourceFile, file)
-	r.appendBytes(sourceFunction, function)
-	r.appendBytes(sourceLine, lineNum)
+	r.open()
+	r.appendNewKey(source)
+	r.appendKeyVal(sourceFile, file)
+	r.appendKeyVal(sourceFunction, function)
+	r.appendKeyVal(sourceLine, lineNum)
 	r.close()
 	r.appendByte(',')
+	r.close()
 	return r
 }
 
 //Error append an error message to the current Trace
 func (r Trace) Error(e error) Trace {
-	r.appendBytes(err, e.Error())
+	r.open()
+	if e != nil {
+		r.appendKeyVal(err, e.Error())
+	} else {
+		r.appendKeyVal(err, "nil")
+	}
+	r.close()
 	return r
 }
 
 //Append another Trace record to the current one
 func (r Trace) Append(trail Trace) Trace {
-	return append(r, trail[1:]...)
+	r.open()
+	r.appendBytes(trail[1:])
+	return r
 }
 
 //UTC add the time to the current Trace record
 func (r Trace) UTC() Trace {
-	r.appendBytes(timef, time.Now().Format(time.RFC3339))
+	r.appendKeyVal(timef, time.Now().Format(time.RFC3339))
 	return r
 }
 
-//Finalize returns the built Trace record as JSON
-func (r Trace) Finalize() []byte {
-	r.close()
-	return r
-}
-
-func (r *Trace) appendBytes(key, val string) {
+func (r *Trace) appendKeyVal(key, val string) {
 	*r = append(*r, '"')
 	*r = append(*r, []byte(key)...)
 	*r = append(*r, '"', ':', '"')
@@ -102,7 +110,11 @@ func (r *Trace) appendBytes(key, val string) {
 	*r = append(*r, '"', ',')
 }
 
-func (r *Trace) appendBytesNew(key string) {
+func (r *Trace) appendBytes(b []byte) {
+	*r = append(*r, b...)
+}
+
+func (r *Trace) appendNewKey(key string) {
 	*r = append(*r, '"')
 	*r = append(*r, []byte(key)...)
 	*r = append(*r, '"', ':', '{')
@@ -110,6 +122,14 @@ func (r *Trace) appendBytesNew(key string) {
 
 func (r *Trace) appendByte(b ...byte) {
 	*r = append(*r, b...)
+}
+
+func (r *Trace) open() {
+	if (*r)[len(*r)-2] == '{' {
+		*r = []byte(*r)[0 : len(*r)-1]
+	} else {
+		(*r)[len(*r)-1] = ','
+	}
 }
 
 func (r *Trace) close() {
