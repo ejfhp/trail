@@ -25,7 +25,12 @@ func TestNewWriterAMPM(t *testing.T) {
 	if err == nil && pmia != nil {
 		pmsizea = pmia.Size()
 	}
-	w.Write([]byte(text))
+
+	_, err = w.Write([]byte(text))
+	if err != nil {
+		t.Fatalf("cannot write %v", err)
+	}
+
 	amib, err := os.Stat(am)
 	if err == nil && amib != nil {
 		amsizeb = amib.Size()
