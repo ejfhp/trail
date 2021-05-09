@@ -65,12 +65,12 @@ func (r Trace) Add(name, val string) Trace {
 }
 
 //Source append a source location to the current Trace
-func (r Trace) Source(file, function, lineNum string) Trace {
+func (r Trace) Source(file, object, function string) Trace {
 	r.open()
 	r.appendNewKey(source)
 	r.appendKeyVal(sourceFile, file)
-	r.appendKeyVal(sourceFunction, function)
-	r.appendKeyVal(sourceLine, lineNum)
+	r.appendKeyVal(sourceFunction, object)
+	r.appendKeyVal(sourceLine, function)
 	r.close()
 	r.appendByte(',')
 	r.close()
