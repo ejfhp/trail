@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/ejfhp/trail/trace"
 )
@@ -24,6 +25,71 @@ func TestAppendTrace(t *testing.T) {
 	log := string(msg.Append(msga))
 
 	exp := `{"severity":"INFO","message":"failed to log","extra":"append"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+func TestAppendInt64Trace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	msga := trace.New().AddInt64("extra", 20)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"20"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+
+func TestAppendInt32Trace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	msga := trace.New().AddInt32("extra", 20)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"20"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+
+func TestAppendIntTrace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	msga := trace.New().AddInt("extra", 20)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"20"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+func TestAppendFloat64Trace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	msga := trace.New().AddFloat64("extra", 20.1)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"20.100000"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+
+func TestAppendFloat32Trace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	msga := trace.New().AddFloat32("extra", 20.1)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"20.100000"}`
+	if log != exp {
+		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
+	}
+}
+
+func TestAppendTimeTrace(t *testing.T) {
+	msg := trace.Info("failed to log")
+	time := time.Date(2025, time.January, 20, 6, 30, 10, 999, time.UTC)
+	msga := trace.New().AddTime("extra", time)
+	log := string(msg.Append(msga))
+
+	exp := `{"severity":"INFO","message":"failed to log","extra":"2025-01-20T06:30:10Z"}`
 	if log != exp {
 		t.Fatalf("unexpected output:\n'%s' instead of:\n'%s'", log, exp)
 	}
